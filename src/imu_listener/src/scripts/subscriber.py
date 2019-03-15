@@ -15,7 +15,8 @@ def callback(data):
 
 def listener(): # nodes are unique in ROS
     rospy.init_node('listener', anonymous=True)
-    rospy.Subscriber("imu", String, callback)
+    rospy.Subscriber("imu", String, callback) # Subscriber subscribes to publisher node serial_node.py
+    # in rosserial_python
     rospy.spin()
 
 if __name__ == '__main__':
