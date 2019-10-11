@@ -1419,4 +1419,3 @@ void SkyTraqNmeaParser::EmptyCommaPos()
   memset(commaPos, 0, sizeof(commaPos)); 
   commaNum = 0; 
 }
-

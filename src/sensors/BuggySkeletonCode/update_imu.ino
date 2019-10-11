@@ -1,7 +1,7 @@
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+#include "Adafruit_Sensor.h"
+#include "Adafruit_BNO055.h"
+#include "utility/imumaths.h"
 
 /* This driver reads raw data from the BNO055
 
@@ -25,14 +25,15 @@
 Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28);
 
 double imu_vals[4];
-int safe = 0
+int safe_imu = 0;
 
-bool isSafe() {
-  return safe == 4;
+bool isSafe_IMU() {
+  return safe_imu == 4;
 }
 
+/*
 volatile boolean inService = false;
-void serialInterrupt() {
+void serialInterrupt_IMU() {
   if(inService) return;
   inService = true;
   
@@ -42,6 +43,7 @@ void serialInterrupt() {
   
   inService = false;
 }
+*/
 
 void init_imu() {
   Serial.begin(115200);
@@ -67,7 +69,7 @@ void init_imu() {
   bno.setExtCrystalUse(true);
 
   Serial.println("Calibration status values: 0=uncalibrated, 3=fully calibrated");
-  attachInterrupt(0, serialInterrupt, CHANGE);
+  //attachInterrupt(0, serialInterrupt, CHANGE);
 }
 
 // only call this internally
@@ -79,16 +81,18 @@ bool update_imu() {
   // - VECTOR_EULER         - degrees
   // - VECTOR_LINEARACCEL   - m/s^2
   // - VECTOR_GRAVITY       - m/s^2
-  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
-  safe = 0;
-  imu_vals[safe++] = quat.x();
-  imu_vals[safe++] = quat.y();
-  imu_vals[safe++] = quat.z();
-  imu_vals[safe++] = quat.w();
+ 
+  safe_imu = 0;
+  imu::Quaternion quat = bno.getQuat();
+  imu_vals[safe_imu++] = quat.x();
+  imu_vals[safe_imu++] = quat.y();
+  imu_vals[safe_imu++] = quat.z();
+  imu_vals[safe_imu++] = quat.w();
 
   /* Display the floating point data */
   /*
+  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
   Serial.print("X: ");
   Serial.print(euler.x());
   Serial.print(" Y: ");

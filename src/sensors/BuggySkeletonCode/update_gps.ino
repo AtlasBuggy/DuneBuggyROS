@@ -1,8 +1,8 @@
-#include <SoftwareSerial.h>
+#include "SoftwareSerial.h"
 #include "SkyTraqNmeaParser.h"
 
 double gps_vals[3];
-int safe = 0;
+int safe_gps = 0;
 
 SkyTraqNmeaParser parser;
 const GnssData* gdata;
@@ -11,8 +11,8 @@ U32 gnssUpdateFlag = 0;
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type);
 bool update_globals(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type);
 
-bool isSafe() {
-  return safe == 3;
+bool isSafe_GPS() {
+  return safe_gps == 3;
 }
 
 bool init_gps() {
@@ -24,21 +24,20 @@ bool init_gps() {
   digitalWrite(2, LOW);
   
   //NS-HP output NMEA message in 115200 bps
-  Serial.begin(115200);
-  attachInterrupt(0, serialInterrupt, CHANGE);
+  Serial1.begin(115200);
+  attachInterrupt(0, serialInterrupt_GPS, CHANGE);
   return true;
 }
 
 volatile boolean inService = false;
 
-//Function takes Serial input from computer to determine Encoding Type and parse the message
-void serialInterrupt() {
+void serialInterrupt_GPS() {
   if(inService) return;
   inService = true;
   
   interrupts();
-  while(!Serial.available());
-  parser.Encode(Serial.read());
+  while(!Serial1.available());
+  parser.Encode(Serial1.read());
   
   inService = false;
 }
@@ -47,7 +46,7 @@ bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type){
   gnssUpdateFlag = gnssUpdateFlag | f;
   gdata = parser.GetGnssData();
 
-  safe = 0;
+  safe_gps = 0;
   update_globals(f, buf, type);
   //return true to clear the flag in SkyTraqNmeaParseryTraq
   return true;
@@ -64,15 +63,15 @@ bool update_globals(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
     {
     case SkyTraqNmeaParser::UpdateLatitude:
         gps_vals[0] = gnss.GetLatitude();
-        safe++;
+        safe_gps++;
       break;
     case SkyTraqNmeaParser::UpdateLongitude:
         gps_vals[1] = gnss.GetLongitude();
-        safe++;
+        safe_gps++;
        break;
     case SkyTraqNmeaParser::UpdateAltitude:
         gps_vals[2] = gnss.GetAltitudeInMeter();
-        safe++;
+        safe_gps++;
       break;
     default:
       break;
@@ -86,6 +85,6 @@ bool update_globals(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
 void setup() {
   init_gps();  
 }
-*/
 
-//void loop() {}
+void loop() {}
+*/

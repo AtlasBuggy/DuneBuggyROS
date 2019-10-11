@@ -391,4 +391,3 @@ protected:  //protected functions
   void ProcessingPSTI30(const U08* pt, int len);
   void ProcessingPSTI32(const U08* pt, int len);
 };
-
