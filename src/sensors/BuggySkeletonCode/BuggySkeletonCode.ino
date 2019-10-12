@@ -1,9 +1,13 @@
 //#include "update_gps"
 //#include "update_imu"
 
-const int GPS_PIN;
+//PINS:
+//Note: 2, 3, 18, 19, 20, 21 pins for interrupts
+//const int GPS_PIN;
 const int RF_PIN;
-const int BAUD_RATE = 19200;
+//const int IMU_PIN;
+
+const int BAUD_RATE = 115200;
 const int FREQUENCY = 10; //Hertz (must divide 1000 evenly)
 
 const byte LED = 13;
@@ -19,22 +23,21 @@ void setup() {
   Serial.begin(BAUD_RATE);
 
   //Initialize pins
-
-  //pinMode(GPS_PIN, INPUT);
-
+  /*
   pinMode(RF_PIN, INPUT);
   digitalWrite(GPS_PIN, LOW);
   digitalWrite(RF_PIN, LOW);
-  //
-  attachInterrupt(digitalPinToInterrupt(GPS_PIN), ISR_update_GPS, CHANGE);
+  
+  //attachInterrupt(digitalPinToInterrupt(GPS_PIN), ISR_update_GPS, CHANGE);
 
-  attachInterrupt(digitalPinToInterrupt(RF_PIN), ISR_update_RF, CHANGE);
+  //attachInterrupt(digitalPinToInterrupt(RF_PIN), ISR_update_RF, CHANGE);
+  */
 
-  //Initialize GPS: GPS uses Serial1
+  //Initialize GPS: GPS uses Serial1 to send info to board
   init_gps();
-  //Initialize IMU: IMU uses Serial2
+  //Initialize IMU: IMU code currently prints some outputs to the main Serial
   init_imu();
-
+  
 
 
   //Write Timer?
@@ -55,7 +58,8 @@ void setup() {
 
 }
 
-
+//Interrupts may not be needed with Serial I/O
+/*
 //When signal occurs on pin, interrupt writes to variable.
 void ISR_update_GPS() {
   //detachInterrupt(digitalPinToInterrupt(GPS_PIN));
@@ -70,13 +74,21 @@ void ISR_update_GPS() {
 void ISR_update_RF() {
 
 }
+*/
 
-void sendMessage() {
-  //noInterrrupts();
+void sendMessage() {  
   //read the data
-  //Interrupts();
+  
+  //GPS data update occurs when the update in the loop adds enough bytes from Serial1 for a complete message from the gps
+  
+  //gets IMU data, stored in imu_vals[], 4 values
+  update_imu();
+  
   //Build string
+  String msg;
   //Transmit string
+  //Serial.print or println?
+  Serial.println(msg);
 }
 
 //Write Timer?
@@ -89,11 +101,13 @@ ISR(TIMER1_COMPA_vect)
 
 
 void loop() {
+  
   if (millis() - lastTime >= 1000 / FREQUENCY) {
     sendMessage();
     lastTime = millis();
   }
 
+  check_GPS();
   //noInterrupts();
   //Store 'atomic data' for message sending in this space, where interrupts can't write to the variables being read? Or just use volatile variables where variables are read from memory?
 

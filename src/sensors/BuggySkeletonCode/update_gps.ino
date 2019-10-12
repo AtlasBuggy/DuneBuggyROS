@@ -25,10 +25,10 @@ bool init_gps() {
   
   //NS-HP output NMEA message in 115200 bps
   Serial1.begin(115200);
-  attachInterrupt(0, serialInterrupt_GPS, CHANGE);
+  //attachInterrupt(0, serialInterrupt_GPS, CHANGE);
   return true;
 }
-
+/*
 volatile boolean inService = false;
 
 void serialInterrupt_GPS() {
@@ -40,6 +40,12 @@ void serialInterrupt_GPS() {
   parser.Encode(Serial1.read());
   
   inService = false;
+}
+*/
+
+//Executed on main loop in the skeleton code
+void check_GPS(){
+  if(Serial1.available())parser.Encode(Serial1.read());
 }
 
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type){

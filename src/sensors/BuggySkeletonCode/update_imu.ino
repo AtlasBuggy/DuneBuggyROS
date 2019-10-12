@@ -31,6 +31,8 @@ bool isSafe_IMU() {
   return safe_imu == 4;
 }
 
+//IMU runs off the Wire library, so info must be requested from 'slave' devices, thus interrupts may not work
+//Also, this uses the sda/scl pins, 20/21 on the mega instead of serial. We may have to pinMode these pins with PULLUP modifiers as per the Wire library 
 /*
 volatile boolean inService = false;
 void serialInterrupt_IMU() {
@@ -69,7 +71,7 @@ void init_imu() {
   bno.setExtCrystalUse(true);
 
   Serial.println("Calibration status values: 0=uncalibrated, 3=fully calibrated");
-  //attachInterrupt(0, serialInterrupt, CHANGE);
+  
 }
 
 // only call this internally
