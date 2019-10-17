@@ -1,6 +1,8 @@
 #! usr/bin/env python3
 import rospy
-from std_msgs.msg import Imu, NavSatFix, uint8, Quaternion
+from sensor_msgs.msg import Imu, NavSatFix
+from geometry_msgs.msg import Quaternion
+from std_msgs.msg import UInt8
 import serial
 
 """
