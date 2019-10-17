@@ -60,10 +60,10 @@ def parse_GPS(data_string):
     GPS_end = 4
     data = line.split("\t")[:GPS_end]
     GPS_msg = NavSatFix()
-    GPS_msg.latitude = data[0]
-    GPS_msg.longitude = data[1]
-    GPS_msg.altitude = data[2]
-    GPS_msg.status.status = data[3] # update flag
+    GPS_msg.latitude = float(data[0])
+    GPS_msg.longitude = float(data[1])
+    GPS_msg.altitude = float(data[2])
+    GPS_msg.status.status = int(data[3]) # update flag
     return GPS_msg
 
 
@@ -74,7 +74,7 @@ def parse_channel(data_string, channel_number):
     channels_end = 8
     data = line.split("\t")[channels_start:channels_end]
     channel_msg = UInt8()
-    channel_msg.data = data[channel_number]
+    channel_msg.data = int(data[channel_number])
     return channel_msg
 
 
@@ -83,10 +83,10 @@ def parse_IMU(data_string):
     # <quatx: double>\t<quaty: double>\t<quatz: double>\t<quatw: double>\n
     IMU_start = 8
     data = line.split("\t")[IMU_start:]
-    IMU_msg.orientation.x = data[0]
-    IMU_msg.orientation.y = data[1]
-    IMU_msg.orientation.z = data[2]
-    IMU_msg.orientation.w = data[3]
+    IMU_msg.orientation.x = int(data[0])
+    IMU_msg.orientation.y = int(data[1])
+    IMU_msg.orientation.z = int(data[2])
+    IMU_msg.orientation.w = int(data[3])
     return IMU_msg
 
 
