@@ -1,6 +1,8 @@
 //#include "update_gps"
 //#include "update_imu"
 
+//#include "libraries/DuneBuggyIMU.cpp"
+
 //PINS:
 //Note: 2, 3, 18, 19, 20, 21 pins for interrupts
 //const int GPS_PIN;
@@ -16,6 +18,8 @@ unsigned long lastTime = 0;
 
 //update_gps myGps;
 //update_imu myImu;
+
+//DuneBuggyIMU myImu = DuneBuggyIMU();
 
 void setup() {
   //noInterrupts(); //stop intterupts
@@ -37,6 +41,8 @@ void setup() {
   init_gps();
   //Initialize IMU: IMU code currently prints some outputs to the main Serial
   init_imu();
+  init_rf();
+  //myImu.init_imu();
   
 
 
@@ -82,13 +88,21 @@ void sendMessage() {
   //GPS data update occurs when the update in the loop adds enough bytes from Serial1 for a complete message from the gps
   
   //gets IMU data, stored in imu_vals[], 4 values
-  update_imu();
+  
+  
+  //myImu.update_imu();
+
+  write_imu_vals();
+  write_gps_vals();
+  write_rf_vals();
+  Serial.print('\n');
   
   //Build string
-  String msg;
+//  String msg = String(myImu.imu _vals[0],3);
+//  String msg = "hello, world!";
   //Transmit string
   //Serial.print or println?
-  Serial.println(msg);
+//  Serial.println(msg);  
 }
 
 //Write Timer?
@@ -108,6 +122,8 @@ void loop() {
   }
 
   check_GPS();
+  update_imu();
+  update_rf();
   //noInterrupts();
   //Store 'atomic data' for message sending in this space, where interrupts can't write to the variables being read? Or just use volatile variables where variables are read from memory?
 

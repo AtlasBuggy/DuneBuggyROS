@@ -1,7 +1,7 @@
 #include <Wire.h>
-#include "Adafruit_Sensor.h"
-#include "Adafruit_BNO055.h"
-#include "utility/imumaths.h"
+#include "libraries/Adafruit_Sensor.h"
+#include "libraries/Adafruit_BNO055.cpp"
+#include "libraries/utility/imumaths.h"
 
 /* This driver reads raw data from the BNO055
 
@@ -49,7 +49,7 @@ void serialInterrupt_IMU() {
 
 void init_imu() {
   Serial.begin(115200);
-  Serial.println("Orientation Sensor Raw Data Test"); Serial.println("");
+//  Serial.println("Orientation Sensor Raw Data Test"); Serial.println("");
 
   /* Initialise the sensor */
   if(!bno.begin())
@@ -62,15 +62,15 @@ void init_imu() {
   delay(1000);
 
   /* Display the current temperature */
-  int8_t temp = bno.getTemp();
-  Serial.print("Current Temperature: ");
-  Serial.print(temp);
-  Serial.println(" C");
-  Serial.println("");
+//  int8_t temp = bno.getTemp();
+//  Serial.print("Current Temperature: ");
+//  Serial.print(temp);
+//  Serial.println(" C");
+//  Serial.println("");
 
   bno.setExtCrystalUse(true);
 
-  Serial.println("Calibration status values: 0=uncalibrated, 3=fully calibrated");
+//  Serial.println("Calibration status values: 0=uncalibrated, 3=fully calibrated");
   
 }
 
@@ -104,19 +104,12 @@ bool update_imu() {
   Serial.print("\t\t");
   */
 
-  /*
-  // Quaternion data
-  imu::Quaternion quat = bno.getQuat();
-  Serial.print("qW: ");
-  Serial.print(quat.w(), 4);
-  Serial.print(" qX: ");
-  Serial.print(quat.x(), 4);
-  Serial.print(" qY: ");
-  Serial.print(quat.y(), 4);
-  Serial.print(" qZ: ");
-  Serial.print(quat.z(), 4);
-  Serial.print("\t\t");
-  */
+  
+  /* Quaternion data */
+//  imu::Quaternion quat = bno.getQuat();
+  
+  
+  
 
   /* Display calibration status for each sensor. */
   /*
@@ -134,4 +127,15 @@ bool update_imu() {
   delay(BNO055_SAMPLERATE_DELAY_MS);
   */
   return true;
+}
+
+void write_imu_vals() {
+  Serial.print(imu_vals[0], 4);
+  Serial.print("\t");
+  Serial.print(imu_vals[1], 4);
+  Serial.print("\t");
+  Serial.print(imu_vals[2], 4);
+  Serial.print("\t");
+  Serial.print(imu_vals[3], 4);
+  Serial.print("\t");
 }

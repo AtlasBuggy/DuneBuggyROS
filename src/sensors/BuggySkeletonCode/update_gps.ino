@@ -16,6 +16,7 @@ bool isSafe_GPS() {
 }
 
 bool init_gps() {
+  Serial.begin(115200);
   //Set callback function for parsing result notification
   parser.SetNotify(GnssUpdated);
   
@@ -84,6 +85,16 @@ bool update_globals(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
     }
   }
   return true;
+}
+
+void write_gps_vals()
+{
+  Serial.print(gps_vals[0],4);
+  Serial.print("\t");
+  Serial.print(gps_vals[1],4);
+  Serial.print("\t");
+  Serial.print(gps_vals[2],4);
+  Serial.print("\t");
 }
 
 
