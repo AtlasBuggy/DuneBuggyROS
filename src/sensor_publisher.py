@@ -130,7 +130,7 @@ if __name__ == '__main__':
     # TODO make this serial stuff work
     ser = serial.Serial()
     ser.baudrate = 115200
-    ser.port = "some port name"
+    ser.port = "/dev/tty.usbmodem1d11" # something like this
     ser.timeout = 1
     ser.open()
     print(ser.name)
