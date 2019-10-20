@@ -47,5 +47,8 @@ qtcreator-*
 # Emacs
 .#*
 
+# Vim
+tags:
+
 # Catkin custom files
 CATKIN_IGNORE
