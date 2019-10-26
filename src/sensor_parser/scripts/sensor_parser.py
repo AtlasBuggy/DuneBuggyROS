@@ -13,7 +13,7 @@ import serial
 #   <latitude:  double>\t<longitude: double>\t<altitude: double>\t
 #   <ch1: int>\t<ch2: int>\t<ch3: int>\t<ch4: int>\t<ch5: int>\t<ch6: int>\n
 
-def parse_GPS(data_string):
+def parse_GPS(data):
     # parses GPS part of string in the form:
     GPS_msg = NavSatFix()
     GPS_msg.latitude = float(data[0])
@@ -23,14 +23,14 @@ def parse_GPS(data_string):
     return GPS_msg
 
 
-def parse_channel(data_string, channel_number):
+def parse_channel(data, channel_number):
     # parses channel part of the string of the form:
     channel_msg = UInt32()
     channel_msg.data = int(data[channel_number])
     return channel_msg
 
 
-def parse_IMU(data_string):
+def parse_IMU(data):
     # parses IMU part of the string of the form
     IMU_msg = Imu()
     IMU_msg.orientation.x = float(data[0])
@@ -43,13 +43,20 @@ def parse_IMU(data_string):
 def parse_sensors(ser):
     number_channels = 6
     number_params = 14
+    GPS_start = 4
+    IMU_start = 0
+    channel_start = 7
+    GPS_length = 3
+    IMU_length = 4
+    channel_length = 6
 
     # define the publishers(IMU, GPS, ch1-ch6)
     imu_pub = rospy.Publisher('IMU', Imu, queue_size=10)
     gps_pub = rospy.Publisher('GPS', NavSatFix, queue_size=10)
     channel_publishers = []
     for i in range(number_channels):
-        channel_publishers.append(rospy.Publisher('ch' + str(i+1), UInt32, queue_size=10))
+        channel_publishers.append(rospy.Publisher('ch' + str(i+1), UInt32,
+                                  queue_size=10))
 
     rospy.init_node('sensor_info', anonymous=True)
     rate = rospy.Rate(10)
@@ -59,20 +66,18 @@ def parse_sensors(ser):
         line = ser.readline()
 
         data = line.split('\t')
-        GPS_start = 4
-        IMU_start = 0
-        channel_start = 7
 
         # if the full data didn't come though, ignore
         if len(data) != number_params:
             continue
 
         # parse the strings into ros messages
-        imu_msg = parse_IMU(data[IMU_start:])
-        gps_msg = parse_GPS(data[GPS_start:])
+        imu_msg = parse_IMU(data[IMU_start : IMU_start + IMU_length])
+        gps_msg = parse_GPS(data[GPS_start : GPS_start + GPS_length])
         channel_msgs = []
         for i in range(number_channels):
-            channel_msgs.append(parse_channel(data[channel_start:], i))
+            channel_slice = data[channel_start : channel_start + channel_length]
+            channel_msgs.append(parse_channel(channel_slice, i))
 
         # publish on all the topics
         imu_pub.publish(imu_msg)
