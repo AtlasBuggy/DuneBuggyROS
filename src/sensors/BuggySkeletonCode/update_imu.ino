@@ -48,7 +48,7 @@ void serialInterrupt_IMU() {
 */
 
 void init_imu() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
 //  Serial.println("Orientation Sensor Raw Data Test"); Serial.println("");
 
   /* Initialise the sensor */

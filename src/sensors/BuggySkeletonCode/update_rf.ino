@@ -12,7 +12,7 @@ float rf_k = .3;
  
 void init_rf() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  //Serial.begin(115200);
   pinMode(CH6_PIN, INPUT);
   pinMode(CH5_PIN, INPUT);
   pinMode(CH1_PIN, INPUT); 
@@ -24,7 +24,7 @@ void init_rf() {
 void update_rf() {
   // put your main code here, to run repeatedly:
   for(int i=0; i<=5; i++){
-    int new_val = pulseIn(rf_pins[i], HIGH);
+    int new_val = pulseIn(rf_pins[i], HIGH, 4);
     rf_errs[i]    = new_val - rf_vals[i];
     rf_vals[i]    = rf_vals[i] + rf_k*rf_errs[i];
   }

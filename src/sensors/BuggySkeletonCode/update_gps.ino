@@ -16,7 +16,7 @@ bool isSafe_GPS() {
 }
 
 bool init_gps() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
   //Set callback function for parsing result notification
   parser.SetNotify(GnssUpdated);
   
@@ -28,6 +28,10 @@ bool init_gps() {
   Serial1.begin(115200);
   //attachInterrupt(0, serialInterrupt_GPS, CHANGE);
   return true;
+}
+
+void serialEvent1(){
+  parser.Encode(Serial1.read());
 }
 /*
 volatile boolean inService = false;
@@ -46,13 +50,14 @@ void serialInterrupt_GPS() {
 
 //Executed on main loop in the skeleton code
 void check_GPS(){
+  
   if(Serial1.available())parser.Encode(Serial1.read());
 }
 
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type){
   gnssUpdateFlag = gnssUpdateFlag | f;
   gdata = parser.GetGnssData();
-
+  Serial.println("GNSS");
   safe_gps = 0;
   update_globals(f, buf, type);
   //return true to clear the flag in SkyTraqNmeaParseryTraq

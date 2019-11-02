@@ -9,7 +9,7 @@
 const int RF_PIN;
 //const int IMU_PIN;
 
-const int BAUD_RATE = 115200;
+const unsigned long BAUD_RATE = 115200;
 const int FREQUENCY = 10; //Hertz (must divide 1000 evenly)
 
 const byte LED = 13;
