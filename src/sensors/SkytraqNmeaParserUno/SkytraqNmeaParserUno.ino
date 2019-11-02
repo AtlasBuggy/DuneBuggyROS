@@ -32,7 +32,8 @@ void setup()
   Serial1.begin(115200);
   Serial.begin(115200);
   //attachInterrupt(digitalPinToInterrupt(2), serialInterrupt, CHANGE);
-
+  Serial.print("SUPPORTS SATELLITES: ");
+  Serial.println(_SUPPORT_GPS_SATELLITES_);
   Serial.println("Init done!=================================");
 }
 
@@ -48,17 +49,21 @@ void serialEvent1(){
   /*
   if(typ3 != parser.None && typ3 != parser.BufferOverflow)Serial.println("Valid Data");
   else if(typ3==parser.None)Serial.println("none");
-  */
+  
   if (nmea.update((char)dat))
     {
+      /*
       Serial.print("NMEA0183 sentence accepted (");
       Serial.print(nmea.getFields());
       Serial.print(" fields): ");
       Serial.write(nmea.getSentence());
       Serial.println();
+      
     }
+    */
 }
 
+/*
 void serialInterrupt()
 {
  Serial.println("info");
@@ -87,13 +92,11 @@ void serialInterrupt()
       Serial.write(nmea.getSentence());
       Serial.println();
     }
-  */
+  
  inService = false;
 }
-
-void loop()
-{
-
+*/
+void loop() {
 }
 
 void ShowSatellites(const SatelliteInfo* si)
@@ -123,7 +126,7 @@ void ShowSatellites(const SatelliteInfo* si)
 
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
 {
-  Serial.println("updated");
+  //Serial.println("updated");
   gnssUpdateFlag |= f;
   gdata = parser.GetGnssData();
   Display(f, buf, type);
@@ -159,7 +162,15 @@ bool Display(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
       Serial.print(':');
       Serial.print(gnss.GetMinute());
       Serial.print(':');
-      Serial.println(gnss.GetSecond());      
+      Serial.println(gnss.GetSecond());
+      
+      Serial.println();
+      Serial.print(gnss.GetLatitude());
+      Serial.print(" ");
+      Serial.print(gnss.GetLongitude());
+      Serial.print(" ");
+      Serial.print(gnss.GetAltitudeInMeter());
+      Serial.println();
       break;
     case SkyTraqNmeaParser::UpdateLatitude:
       Serial.print("Latitude:");

@@ -20,7 +20,7 @@ typedef unsigned long int         U32;
 typedef float                     F32;
 typedef double                    D64;
 
-#define _SUPPORT_GPS_SATELLITES_        0
+#define _SUPPORT_GPS_SATELLITES_        1
 #define _SUPPORT_GLONASS_SATELLITES_    0
 #define _SUPPORT_BEIDOU_SATELLITES_     0
 
@@ -391,4 +391,3 @@ protected:  //protected functions
   void ProcessingPSTI30(const U08* pt, int len);
   void ProcessingPSTI32(const U08* pt, int len);
 };
-
