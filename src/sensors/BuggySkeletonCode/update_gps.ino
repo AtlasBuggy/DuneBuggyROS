@@ -32,7 +32,7 @@ bool init_gps() {
   digitalWrite(2, LOW);
   
   //NS-HP output NMEA message in 115200 bps
-  Serial1.begin(_BAUD_RATE_);
+  Serial2.begin(_BAUD_RATE_);
   //attachInterrupt(0, serialInterrupt_GPS, CHANGE);
 
   gps_vals[2] = -999;
@@ -41,7 +41,7 @@ bool init_gps() {
 }
 
 void serialEvent1(){
-  parser.Encode(Serial1.read());
+  parser.Encode(Serial2.read());
 }
 
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type){
