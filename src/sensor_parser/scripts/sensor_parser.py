@@ -2,7 +2,7 @@
 import rospy
 from sensor_msgs.msg import Imu, NavSatFix
 from geometry_msgs.msg import Quaternion
-from std_msgs.msg import UInt32
+from std_msgs.msg import Int32
 import serial
 
 # Receives a message from the arduino through serial and parses the sensor
@@ -23,11 +23,14 @@ def parse_GPS(data):
     return GPS_msg
 
 
-def parse_channel(data, channel_number):
+def parse_encoders(data):
     # parses channel part of the string of the form:
-    channel_msg = UInt32()
-    channel_msg.data = int(data[channel_number])
-    return channel_msg
+    enc1_msg = Int32()
+    enc2_msg = Int32()
+
+    enc1_msg.data = int(data[0])
+    enc2_msg.data = int(data[1])
+    return [enc1_msg, enc2_msg]
 
 
 def parse_IMU(data):
@@ -41,22 +44,19 @@ def parse_IMU(data):
 
 
 def parse_sensors(ser):
-    number_channels = 6
-    number_params = 14
+    number_params = 10
     GPS_start = 4
     IMU_start = 0
-    channel_start = 7
+    encoder_start = 7
     GPS_length = 3
     IMU_length = 4
-    channel_length = 6
+    encoder_length = 2
 
     # define the publishers(IMU, GPS, ch1-ch6)
     imu_pub = rospy.Publisher('IMU', Imu, queue_size=10)
     gps_pub = rospy.Publisher('GPS', NavSatFix, queue_size=10)
-    channel_publishers = []
-    for i in range(number_channels):
-        channel_publishers.append(rospy.Publisher('ch' + str(i+1), UInt32,
-                                  queue_size=10))
+    enc1_pub = rospy.Publisher('enc1', Int32, queue_size=10)
+    enc2_pub = rospy.Publisher('enc2', Int32, queue_size=10)
 
     rospy.init_node('sensor_info', anonymous=True)
     rate = rospy.Rate(10)
@@ -71,21 +71,20 @@ def parse_sensors(ser):
         if len(data) != number_params:
             continue
 
+        # print("test")
+
         # parse the strings into ros messages
         imu_msg = parse_IMU(data[IMU_start : IMU_start + IMU_length])
         gps_msg = parse_GPS(data[GPS_start : GPS_start + GPS_length])
-        channel_msgs = []
-        for i in range(number_channels):
-            channel_slice = data[channel_start : channel_start + channel_length]
-            channel_msgs.append(parse_channel(channel_slice, i))
+        enc_msgs = parse_encoders(data[encoder_start : encoder_start + encoder_length])
+        
 
         # publish on all the topics
         imu_pub.publish(imu_msg)
         gps_pub.publish(gps_msg)
-        for i in range(number_channels):
-            pub = channel_publishers[i]
-            msg = channel_msgs[i]
-            pub.publish(msg)
+        enc1_pub.publish(enc_msgs[0])
+        enc2_pub.publish(enc_msgs[1])
+
         rate.sleep()
 
 if __name__ == '__main__':
