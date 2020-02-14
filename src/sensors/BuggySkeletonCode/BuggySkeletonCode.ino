@@ -5,9 +5,10 @@
 
 #define _BAUD_RATE_   115200
 
-#define _RUN_IMU_     1
-#define _RUN_GPS_     1
-#define _RUN_RF_      1
+#define _RUN_IMU_         1
+#define _RUN_GPS_         1
+#define _RUN_ENCODER_     1
+#define _RUN_RF_          0
 
 //PINS:
 //Note: 2, 3, 18, 19, 20, 21 pins for interrupts
@@ -27,6 +28,9 @@ void setup() {
   //Initialize GPS: GPS uses Serial1 to send info to board  
   init_gps();
 #endif
+#if (_RUN_ENCODER_)
+  init_encoder();
+#endif
 #if (_RUN_RF_)
   init_rf();
 #endif
@@ -41,6 +45,9 @@ void sendMessage() {
 #endif
 #if (_RUN_GPS_)
   write_gps_vals();
+#endif
+#if (_RUN_ENCODER_)
+  write_encoder_vals();
 #endif
 #if (_RUN_RF_)
   write_rf_vals();
