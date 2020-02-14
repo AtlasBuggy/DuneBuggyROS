@@ -1,6 +1,8 @@
+
 #define _NUM_ENCODERS_        2
 
 unsigned encoder_interrupt[_NUM_ENCODERS_] = {2, 3};
+unsigned encoder_input[_NUM_ENCODERS_] = {4, 5};
 int encoder_vals[_NUM_ENCODERS_];
 
 void init_encoder() {
