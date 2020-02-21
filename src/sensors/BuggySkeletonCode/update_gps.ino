@@ -1,15 +1,14 @@
 #include "SoftwareSerial.h"
 #include "SkyTraqNmeaParser.h"
+#include "Queue.h"
 
-#define _TIME_DEBUGGER_   0
+#define _DEBUGGER_   0
 
 D64 gps_vals[3];
 int safe_gps = 0;
 
-#if (_TIME_DEBUGGER_)
-U16 hour;
-U16 minute;
-D64 second;
+#if (_DEBUGGER_)
+DataQueue<String> q(100);
 #endif
 
 SkyTraqNmeaParser parser;
@@ -40,8 +39,19 @@ bool init_gps() {
   return true;
 }
 
-void serialEvent1(){
-  parser.Encode(Serial2.read());
+void serialEvent2(){
+  const U08 *buf = parser.GetParsingBuffer();
+  int incomingByte = Serial2.read();
+  //Serial.print((char) incomingByte);
+  SkyTraqNmeaParser::ParsingType type = parser.Encode(incomingByte);
+#if (_DEBUGGER_)
+/*
+  for(int i = 0; i < sizeof(buf)/sizeof(buf[0]); i++) {
+    Serial.print("" + ((char *)buf)[i]);
+  }
+  q.enqueue("msg: " + type);
+  */
+#endif
 }
 
 bool GnssUpdated(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type){
@@ -68,10 +78,8 @@ bool update_globals(U32 f, const char* buf, SkyTraqNmeaParser::ParsingType type)
       gps_vals[2] = gnss.GetAltitudeInMeter();
       safe_gps = 3;
 
-#if (_TIME_DEBUGGER_)
-      hour = gnss.GetHour();
-      minute = gnss.GetMinute();
-      second = gnss.GetSecond();
+#if (_DEBUGGER_)
+      //q.enqueue("sat:" + (int) gnss.GetNumberOfSv());
 #endif
       break;
 // These only update when the numbers change from the GPS.
@@ -101,12 +109,12 @@ void write_gps_vals() {
     Serial.print(gps_vals[i],4);
     Serial.print("\t");
   }
-#if (_TIME_DEBUGGER_)
-  Serial.print(hour);
-  Serial.print(":");
-  Serial.print(minute);
-  Serial.print(":");
-  Serial.print(second);
-  Serial.print("\t");
+#if (_DEBUGGER_)
+  Serial.print("d[");
+  while(!q.isEmpty()) {
+    Serial.print(q.dequeue());
+    Serial.print(",");
+  }
+  Serial.print("]/d\t");
 #endif
 }
